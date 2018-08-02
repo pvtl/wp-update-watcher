@@ -426,7 +426,7 @@ if ( !class_exists( 'PvtlUpdateWatcher' ) ) {
 		public function send_notification_email( $message ) {
 		    $message = $this->puw_email_content_template($message);
 			$settings = $this->getSetOptions( self::OPT_FIELD ); // get settings
-			$subject = sprintf( __( "Updates Available @ %s", "pvtl-update-watcher" ), home_url() );
+			$subject = __( "We've scanned your site, here's what we found", "pvtl-update-watcher" );
 			$headers = [];
 			$headers[] = 'Reply-To: Pivotal Agency <hello@pivotalagency.com.au>';
 			add_filter( 'wp_mail_from', array( $this, 'puw_wp_mail_from' ) ); // add from filter
