@@ -426,11 +426,13 @@ if ( !class_exists( 'PvtlUpdateWatcher' ) ) {
 		public function send_notification_email( $message ) {
 		    $message = $this->puw_email_content_template($message);
 			$settings = $this->getSetOptions( self::OPT_FIELD ); // get settings
-			$subject  = sprintf( __( "Updates Available @ %s", "pvtl-update-watcher" ), home_url() );
+			$subject = sprintf( __( "Updates Available @ %s", "pvtl-update-watcher" ), home_url() );
+			$headers = [];
+			$headers[] = 'Reply-To: Pivotal Agency <hello@pivotalagency.com.au>';
 			add_filter( 'wp_mail_from', array( $this, 'puw_wp_mail_from' ) ); // add from filter
 			add_filter( 'wp_mail_from_name', array( $this, 'puw_wp_mail_from_name' ) ); // add from name filter
 			add_filter( 'wp_mail_content_type', array( $this, 'puw_wp_mail_content_type' ) ); // add content type filter
-			wp_mail( $settings['notify_to'], apply_filters( 'puw_email_subject', $subject ), $message ); // send email
+			wp_mail( $settings['notify_to'], apply_filters( 'puw_email_subject', $subject ), $message, $headers ); // send email
 			remove_filter( 'wp_mail_from', array( $this, 'puw_wp_mail_from' ) ); // remove from filter
 			remove_filter( 'wp_mail_from_name', array( $this, 'puw_wp_mail_from_name' ) ); // remove from name filter
 			remove_filter( 'wp_mail_content_type', array( $this, 'puw_wp_mail_content_type' ) ); // remove content type filter
