@@ -1,8 +1,8 @@
 <?php
 /*
-Plugin Name: Pivotal Updates Notifier
+Plugin Name: PVTL Update Watcher
 Plugin URI: https://www.pivotalagency.com.au/
-Description: Pivotal Agency Core Plugin.
+Description: Pivotal Agency Plugin.
 Version: 1.0.0
 Author: Luke Moore
 Author URI: https://www.pivotalagency.com.au/
