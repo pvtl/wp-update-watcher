@@ -1,5 +1,5 @@
 {
-  "name": "pvtl/update-watcher",
+  "name": "pvtl/wp-update-watcher",
   "description": "Monitors your WordPress installation for core, plugin and theme updates and emails you when they are available.",
   "homepage": "https://bitbucket.org/pvtl/update-watcher",
   "license": "GPL3",
