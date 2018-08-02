@@ -13,7 +13,7 @@ License: GPL3+
 // Only load class if it hasn't already been loaded
 if ( !class_exists( 'PvtlUpdateWatcher' ) ) {
 
-	// WP Updates Notifier - All the magic happens here!
+	// PVTL Update Watcher - All the magic happens here!
 	class PvtlUpdateWatcher {
 		const OPT_FIELD         = "puw_settings";
 		const OPT_VERSION_FIELD = "puw_settings_ver";
@@ -548,7 +548,7 @@ if ( !class_exists( 'PvtlUpdateWatcher' ) ) {
 		 * much straight forward use of the WordPress Settings API.
 		 */
 		public function admin_settings_menu() {
-			$page = add_options_page( 'Updates Notifier', 'Updates Notifier', 'manage_options', 'pvtl-update-watcher', array( $this, 'settings_page' ) );
+			$page = add_options_page( 'Update Watcher', 'Update Watcher', 'manage_options', 'pvtl-update-watcher', array( $this, 'settings_page' ) );
 			add_action( "admin_print_scripts-{$page}", array( $this, 'enqueue_plugin_script' ) );
 		}
 
@@ -562,7 +562,7 @@ if ( !class_exists( 'PvtlUpdateWatcher' ) ) {
 			$time_format = get_option( 'time_format' );
 			?>
 			<div class="wrap">
-				<h2><?php _e( "Updates Notifier", "pvtl-update-watcher" ); ?></h2>
+				<h2><?php _e( "Update Watcher", "pvtl-update-watcher" ); ?></h2>
 
 				<p>
                     <span class="description">
@@ -708,7 +708,7 @@ if ( !class_exists( 'PvtlUpdateWatcher' ) ) {
 
 		public function send_test_email( $settings_errors ) {
 			if ( isset( $settings_errors[0]['type'] ) && $settings_errors[0]['type'] == "updated" ) {
-				$this->send_notification_email( __( "This is a test message from WP Updates Notifier.", "pvtl-update-watcher" ) );
+				$this->send_notification_email( __( "This is a test message from PVTL Update Watcher.", "pvtl-update-watcher" ) );
 			}
 		}
 
