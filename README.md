@@ -4,23 +4,26 @@ WordPress plugin that monitors installation for core, plugin and theme updates a
 
 ## Bedrock Installation / Upgrade
 
-Add the git repository to `composer.json`
+#### Step 1.
+
+Add the git _repository_ AND _minimum-stability_ to `composer.json`:
 
 ```
-"repositories": [
-  ...
-  {
-    "type": "git-bitbucket",
-    "url": "https://bitbucket.org/pvtl/wp-update-watcher"
-  }
-]
+  "repositories": [
+    ...
+    {
+      "type": "git",
+      "url": "https://bitbucket.org/pvtl/wp-update-watcher"
+    }
+  ],
+  "minimum-stability": "dev",
 ```
 
-Then just add the package as a requirement, WP Update Watcher will automatically install into the plugins directory set in `composer.json`.
+
+#### Step 2.
+
+Then simply composer require the plugin:
 
 ```
-"require": {
-  ...
-  "pvtl/wp-update-watcher": "dev-master"
-}
+  composer require pvtl/wp-update-watcher
 ```
