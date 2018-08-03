@@ -1,10 +1,10 @@
 <?php
 /*
-Plugin Name: PVTL Update Watcher
+Plugin Name: Wordpress Update Watcher
 Plugin URI: https://www.pivotalagency.com.au/
-Description: Pivotal Agency Plugin.
+Description: Checks Wordpress & Plugins for required updates and sends a notification when updates are required
 Version: 1.0.0
-Author: Luke Moore
+Author: Pivotal Agency
 Author URI: https://www.pivotalagency.com.au/
 Text Domain: pvtl-update-watcher
 License: GPL3+
@@ -704,7 +704,7 @@ if ( !class_exists( 'PvtlUpdateWatcher' ) ) {
 			else {
 				add_settings_error( "puw_settings_main_cron_method", "puw_settings_main_cron_method_error", __( "Invalid cron method selected", "pvtl-update-watcher" ), "error" );
 			}
-			
+
 			return $valid;
 		}
 
