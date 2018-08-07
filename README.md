@@ -2,32 +2,19 @@
 
 WordPress plugin that monitors installation for core, plugin and theme updates and emails the client when they are available.
 
-## Bedrock Installation / Upgrade
+## Installation into a Bedrock site
 
-#### Step 1. Get it ready (to use a repo outside of packagist)
-
-Add the git _repository_ to `composer.json`:
+#### Install
 
 ```
-  "repositories": [
-    ...
-    {
-      "type": "git",
-      "url": "https://bitbucket.org/pvtl/wp-update-watcher"
-    }
-  ],
-```
+# 1. Get it ready (to use a repo outside of packagist)
+composer config repositories.wp-update-watcher git https://bitbucket.org/pvtl/wp-update-watcher
 
-
-#### Step 2. Install the Plugin
-
-Then simply composer require the plugin:
-
-```
+# 2. Install the Plugin
 composer require pvtl/wp-update-watcher
 ```
 
-#### Step 3. Activate
+#### Activate / Configure
 
 - Activate the plugin
 - Settings > Update Watcher:
