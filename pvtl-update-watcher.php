@@ -219,7 +219,7 @@ if ( !class_exists( 'PvtlUpdateWatcher' ) ) {
 		 *
 		 * @return void
 		 */
-		public function do_update_check() {
+		public function do_update_check($print_to_screen = false) {
 			$options      = $this->getSetOptions( self::OPT_FIELD ); // get settings
 			$message      = ""; // start with a blank message
 			$core_updated = $this->core_update_check( $message ); // check the WP core for updates
@@ -235,6 +235,10 @@ if ( !class_exists( 'PvtlUpdateWatcher' ) ) {
 			} else {
 				$themes_updated = false; // no theme updates
 			}
+
+            if ($print_to_screen) {
+                die( trim($message) ); // Heavy handed way of doing it, hey?
+            }
 
 			if ( $core_updated || $plugins_updated || $themes_updated ) { // Did anything come back as need updating?
 			    //$message = __( "There are updates available for your WordPress site:", "pvtl-update-watcher" ) . "\n" . $message . "\n";
@@ -592,7 +596,9 @@ if ( !class_exists( 'PvtlUpdateWatcher' ) ) {
 					?>
 					<p>&nbsp;</p>
 					<input class="button-primary" name="Submit" type="submit" value="<?php _e( "Save settings", "pvtl-update-watcher" ); ?>" />
-					<input class="button" name="submitwithemail" type="submit" value="<?php _e( "Save settings with test email", "pvtl-update-watcher" ); ?>" />
+                    &nbsp;&nbsp;|&nbsp;&nbsp;
+					<input class="button" name="submitwithemail" type="submit" value="<?php _e( "Save settings &amp; Send email now", "pvtl-update-watcher" ); ?>" />
+					<input class="button" name="submitwithprinttoscreen" type="submit" value="<?php _e( "Save settings &amp; Show all updates", "pvtl-update-watcher" ); ?>" />
 				</form>
 			</div>
 		<?php
@@ -698,6 +704,10 @@ if ( !class_exists( 'PvtlUpdateWatcher' ) ) {
 				add_filter( 'pre_set_transient_settings_errors', array( $this, "send_test_email" ) );
 			}
 
+			if ( isset( $_POST['submitwithprinttoscreen'] ) ) {
+				add_filter( 'pre_set_transient_settings_errors', array( $this, "print_updates_to_screen" ) );
+			}
+
 			if ( isset( $input['cron_method'] ) && in_array( $input['cron_method'], array( "wordpress", "other" ) ) ) {
 				$valid['cron_method'] = $input['cron_method'];
 			}
@@ -710,7 +720,15 @@ if ( !class_exists( 'PvtlUpdateWatcher' ) ) {
 
 		public function send_test_email( $settings_errors ) {
 			if ( isset( $settings_errors[0]['type'] ) && $settings_errors[0]['type'] == "updated" ) {
-				$this->send_notification_email( __( "This is a test message from PVTL Update Watcher.", "pvtl-update-watcher" ) );
+				// $this->send_notification_email( __( "This is a test message from PVTL Update Watcher.", "pvtl-update-watcher" ) );
+                $this->do_update_check();
+			}
+		}
+
+		public function print_updates_to_screen( $settings_errors ) {
+			if ( isset( $settings_errors[0]['type'] ) && $settings_errors[0]['type'] == "updated" ) {
+				// $this->send_notification_email( __( "This is a test message from PVTL Update Watcher.", "pvtl-update-watcher" ) );
+                $this->do_update_check(true);
 			}
 		}
 
