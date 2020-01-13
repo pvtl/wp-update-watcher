@@ -456,6 +456,7 @@ if ( !class_exists( 'PvtlUpdateWatcher' ) ) {
 		}
 
 		public function puw_email_content_template($message) {
+			$name = $this->getSetOptions( self::OPT_FIELD )['notify_to_name'] ? $this->getSetOptions( self::OPT_FIELD )['notify_to_name'] : 'there'; 
             ob_start();
 		    include 'email/notification.php';
 		    $message = ob_get_clean();
@@ -611,6 +612,7 @@ if ( !class_exists( 'PvtlUpdateWatcher' ) ) {
 			add_settings_field( "puw_settings_main_frequency", __( "Frequency to check", "pvtl-update-watcher" ), array( $this, "puw_settings_main_field_frequency" ), "pvtl-update-watcher", "puw_settings_main" );
 			add_settings_field( "puw_settings_main_notify_to", __( "Notify email to", "pvtl-update-watcher" ), array( $this, "puw_settings_main_field_notify_to" ), "pvtl-update-watcher", "puw_settings_main" );
 			add_settings_field( "puw_settings_main_notify_from", __( "Notify email from", "pvtl-update-watcher" ), array( $this, "puw_settings_main_field_notify_from" ), "pvtl-update-watcher", "puw_settings_main" );
+			add_settings_field( "puw_settings_main_notify_to_name", __( "Recipient name", "pvtl-update-watcher" ), array( $this, "puw_settings_main_field_notify_to_name" ), "pvtl-update-watcher", "puw_settings_main" );
 			add_settings_field( "puw_settings_main_notify_plugins", __( "Notify about plugin updates?", "pvtl-update-watcher" ), array( $this, "puw_settings_main_field_notify_plugins" ), "pvtl-update-watcher", "puw_settings_main" );
 			add_settings_field( "puw_settings_main_notify_themes", __( "Notify about theme updates?", "pvtl-update-watcher" ), array( $this, "puw_settings_main_field_notify_themes" ), "pvtl-update-watcher", "puw_settings_main" );
 			add_settings_field( "puw_settings_main_notify_automatic", __( "Notify automatic core updates to this address?", "pvtl-update-watcher" ), array( $this, "puw_settings_main_field_notify_automatic" ), "pvtl-update-watcher", "puw_settings_main" );
@@ -668,6 +670,14 @@ if ( !class_exists( 'PvtlUpdateWatcher' ) ) {
 				add_settings_error( "puw_settings_main_notify_from", "puw_settings_main_notify_from_error", __( "Invalid email from entered", "pvtl-update-watcher" ), "error" );
 			}
 
+			$sanitized_email_to_name = sanitize_text_field( $input['notify_to_name'] );
+			if ( !empty( $sanitized_email_to_name ) ) {
+				$valid['notify_to_name'] = $sanitized_email_to_name;
+			}
+			else {
+				add_settings_error( "puw_settings_main_notify_to_name", "puw_settings_main_notify_to_name", __( "Invalid recipient name", "pvtl-update-watcher" ), "error" );
+			}
+
 			$sanitized_notify_plugins = absint( isset( $input['notify_plugins'] ) ? $input['notify_plugins'] : 0 );
 			if ( $sanitized_notify_plugins >= 0 && $sanitized_notify_plugins <= 2 ) {
 				$valid['notify_plugins'] = $sanitized_notify_plugins;
@@ -719,14 +729,14 @@ if ( !class_exists( 'PvtlUpdateWatcher' ) ) {
 		}
 
 		public function send_test_email( $settings_errors ) {
-			if ( isset( $settings_errors[0]['type'] ) && $settings_errors[0]['type'] == "updated" ) {
+			if ( isset( $settings_errors[0]['type'] ) && $settings_errors[0]['type'] == "success" ) {
 				// $this->send_notification_email( __( "This is a test message from PVTL Update Watcher.", "pvtl-update-watcher" ) );
                 $this->do_update_check();
 			}
 		}
 
 		public function print_updates_to_screen( $settings_errors ) {
-			if ( isset( $settings_errors[0]['type'] ) && $settings_errors[0]['type'] == "updated" ) {
+			if ( isset( $settings_errors[0]['type'] ) && $settings_errors[0]['type'] == "success" ) {
 				// $this->send_notification_email( __( "This is a test message from PVTL Update Watcher.", "pvtl-update-watcher" ) );
                 $this->do_update_check(true);
 			}
@@ -766,6 +776,12 @@ if ( !class_exists( 'PvtlUpdateWatcher' ) ) {
 			?>
 			<input id="puw_settings_main_notify_to" class="regular-text" name="<?php echo self::OPT_FIELD; ?>[notify_to]" value="<?php echo $options['notify_to']; ?>" />
 			<span class="description"><?php _e( "Separate multiple email address with a comma (,)", "pvtl-update-watcher" ); ?></span><?php
+		}
+
+		public function puw_settings_main_field_notify_to_name() {
+			$options = $this->getSetOptions( self::OPT_FIELD );
+			?>
+			<input id="puw_settings_main_notify_to_name" class="regular-text" name="<?php echo self::OPT_FIELD; ?>[notify_to_name]" value="<?php echo $options['notify_to_name']; ?>" /><?php
 		}
 
 		public function puw_settings_main_field_notify_from() {
