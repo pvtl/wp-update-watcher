@@ -3,7 +3,7 @@
 Plugin Name: Wordpress Update Watcher
 Plugin URI: https://www.pivotalagency.com.au/
 Description: Checks Wordpress & Plugins for required updates and sends a notification when updates are required
-Version: 1.0.0
+Version: 1.0.5
 Author: Pivotal Agency
 Author URI: https://www.pivotalagency.com.au/
 Text Domain: pvtl-update-watcher
@@ -456,7 +456,7 @@ if ( !class_exists( 'PvtlUpdateWatcher' ) ) {
 		}
 
 		public function puw_email_content_template($message) {
-			$name = $this->getSetOptions( self::OPT_FIELD )['notify_to_name'] ? $this->getSetOptions( self::OPT_FIELD )['notify_to_name'] : 'there'; 
+			$name = $this->getSetOptions( self::OPT_FIELD )['notify_to_name'] ? $this->getSetOptions( self::OPT_FIELD )['notify_to_name'] : 'there';
             ob_start();
 		    include 'email/notification.php';
 		    $message = ob_get_clean();
