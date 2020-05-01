@@ -8,7 +8,7 @@ WordPress plugin that monitors installation for core, plugin and theme updates a
 
 ```
 # 1. Get it ready (to use a repo outside of packagist)
-composer config repositories.wp-update-watcher git https://bitbucket.org/pvtl/wp-update-watcher
+composer config repositories.wp-update-watcher git https://github.com/pvtl/wp-update-watcher
 
 # 2. Install the Plugin
 composer require pvtl/wp-update-watcher
