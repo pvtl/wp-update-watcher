@@ -1,3 +1,10 @@
+<?php
+/**
+ * @var $name
+ * @var $message
+ */
+?>
+
 <!doctype html>
 <html>
 <head>
