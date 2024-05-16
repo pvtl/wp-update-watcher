@@ -3,7 +3,7 @@
 Plugin Name: Wordpress Update Watcher
 Plugin URI: https://www.pivotalagency.com.au/
 Description: Checks Wordpress & Plugins for required updates and sends a notification when updates are required
-Version: 1.0.5
+Version: 1.0.6
 Author: Pivotal Agency
 Author URI: https://www.pivotalagency.com.au/
 Text Domain: pvtl-update-watcher
@@ -220,21 +220,8 @@ if ( !class_exists( 'PvtlUpdateWatcher' ) ) {
 		 * @return void
 		 */
 		public function do_update_check($print_to_screen = false) {
-			$options      = $this->getSetOptions( self::OPT_FIELD ); // get settings
-			$message      = ""; // start with a blank message
-			$core_updated = $this->core_update_check( $message ); // check the WP core for updates
-
-			if ( 0 != $options['notify_plugins'] ) { // are we to check for plugin updates?
-				$plugins_updated = $this->plugins_update_check( $message, $options['notify_plugins'] ); // check for plugin updates
-			} else {
-				$plugins_updated = false; // no plugin updates
-			}
-
-			if ( 0 != $options['notify_themes'] ) { // are we to check for theme updates?
-				$themes_updated = $this->themes_update_check( $message, $options['notify_themes'] ); // check for theme updates
-			} else {
-				$themes_updated = false; // no theme updates
-			}
+            $message      = ""; // start with a blank message
+			[$core_updated, $plugins_updated, $themes_updated] = $this->update_check($message);
 
             if ($print_to_screen) {
                 die( trim($message) ); // Heavy handed way of doing it, hey?
@@ -249,6 +236,29 @@ if ( !class_exists( 'PvtlUpdateWatcher' ) ) {
 			$this->log_last_check_time();
 		}
 
+        public function update_check(&$message)
+        {
+            $options      = $this->getSetOptions( self::OPT_FIELD ); // get settings
+			$core_updated = $this->core_update_check( $message ); // check the WP core for updates
+
+			if ( 0 != $options['notify_plugins'] ) { // are we to check for plugin updates?
+				$plugins_updated = $this->plugins_update_check( $message, $options['notify_plugins'] ); // check for plugin updates
+			} else {
+				$plugins_updated = false; // no plugin updates
+			}
+
+			if ( 0 != $options['notify_themes'] ) { // are we to check for theme updates?
+				$themes_updated = $this->themes_update_check( $message, $options['notify_themes'] ); // check for theme updates
+			} else {
+				$themes_updated = false; // no theme updates
+			}
+
+            return [
+                $core_updated,
+                $plugins_updated,
+                $themes_updated,
+            ];
+        }
 
 		/**
 		 * Checks to see if any WP core updates
@@ -458,7 +468,15 @@ if ( !class_exists( 'PvtlUpdateWatcher' ) ) {
 		public function puw_email_content_template($message) {
 			$name = $this->getSetOptions( self::OPT_FIELD )['notify_to_name'] ? $this->getSetOptions( self::OPT_FIELD )['notify_to_name'] : 'there';
             ob_start();
-		    include 'email/notification.php';
+		    include 'templates/email-notification.php';
+		    $message = ob_get_clean();
+			return $message;
+		}
+
+        public function puw_pdf_content_template($message) {
+            $date = wp_date('D, d M Y H:i:s');
+            ob_start();
+		    include 'templates/pdf-notification.php';
 		    $message = ob_get_clean();
 			return $message;
 		}
@@ -600,12 +618,14 @@ if ( !class_exists( 'PvtlUpdateWatcher' ) ) {
                     &nbsp;&nbsp;|&nbsp;&nbsp;
 					<input class="button" name="submitwithemail" type="submit" value="<?php _e( "Save settings &amp; Send email now", "pvtl-update-watcher" ); ?>" />
 					<input class="button" name="submitwithprinttoscreen" type="submit" value="<?php _e( "Save settings &amp; Show all updates", "pvtl-update-watcher" ); ?>" />
+					<input class="button" name="submitdownloadpdf" type="submit" value="<?php _e( "Download Report", "pvtl-update-watcher" ); ?>" />
 				</form>
 			</div>
 		<?php
 		}
 
 		public function admin_settings_init() {
+            $this->maybe_download_pdf();
 			register_setting( self::OPT_FIELD, self::OPT_FIELD, array( $this, "puw_settings_validate" ) ); // Register Main Settings
 			add_settings_section( "puw_settings_main", __( "Settings", "pvtl-update-watcher" ), array( $this, "puw_settings_main_text" ), "pvtl-update-watcher" ); // Make settings main section
 			add_settings_field( "puw_settings_main_cron_method", __( "Cron Method", "pvtl-update-watcher" ), array( $this, "puw_settings_main_field_cron_method" ), "pvtl-update-watcher", "puw_settings_main" );
@@ -618,6 +638,32 @@ if ( !class_exists( 'PvtlUpdateWatcher' ) ) {
 			add_settings_field( "puw_settings_main_notify_automatic", __( "Notify automatic core updates to this address?", "pvtl-update-watcher" ), array( $this, "puw_settings_main_field_notify_automatic" ), "pvtl-update-watcher", "puw_settings_main" );
 			add_settings_field( "puw_settings_main_hide_updates", __( "Hide core WP update nag from non-admin users?", "pvtl-update-watcher" ), array( $this, "puw_settings_main_field_hide_updates" ), "pvtl-update-watcher", "puw_settings_main" );
 		}
+
+        public function maybe_download_pdf() {
+            if(isset($_POST['submitdownloadpdf'])){
+                $this->download_pdf();
+                exit;
+            }
+        }
+        public function download_pdf() {
+            $message      = ""; // start with a blank message
+			[$core_updated, $plugins_updated, $themes_updated] = $this->update_check($message);
+
+            if ( $core_updated || $plugins_updated || $themes_updated ) {
+                $message = $this->puw_pdf_content_template(trim($message));
+                $date = wp_date('d_m_Y_H_i_s');
+                $filename = "wp-updates-report-{$date}.pdf";
+
+                $options = new \Dompdf\Options();
+                $options->set('isRemoteEnabled', TRUE);
+                $dompdf = new \Dompdf\Dompdf($options);
+                $dompdf->loadHtml($message);
+                $dompdf->render();
+
+                // Make the browser download the PDF output
+                $dompdf->stream($filename, ['Attachment'=>1]);
+            }
+        }
 
 		public function puw_settings_validate( $input ) {
 			$valid = $this->getSetOptions( self::OPT_FIELD );
@@ -835,4 +881,5 @@ if ( !class_exists( 'PvtlUpdateWatcher' ) ) {
 	}
 }
 
+require_once 'vendor/autoload.php';
 new PvtlUpdateWatcher();
