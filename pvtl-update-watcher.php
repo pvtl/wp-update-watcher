@@ -55,6 +55,22 @@ if ( !class_exists( 'PvtlUpdateWatcher' ) ) {
 			add_action( self::CRON_NAME, array( $this, 'do_update_check' ) ); // action to link cron task to actual task
 			add_action( 'wp_ajax_puw_check', array( $this, 'puw_check' ) ); // Admin ajax hook for remote cron method.
 			add_action( 'wp_ajax_nopriv_puw_check', array( $this, 'puw_check' ) ); // Admin ajax hook for remote cron method.
+
+			add_action('admin_notices', function () {
+                if(
+                    !isset($_GET['page'])
+                    || $_GET['page'] != 'pvtl-update-watcher'
+                    || !isset($_GET['no-updates'])
+                ) {
+                    return;
+                }
+
+                ?>
+                <div class="notice notice-success is-dismissible">
+                    <p><?php _e('No updates available.', 'pvtl-update-watcher'); ?></p>
+                </div>
+                <?php
+            });
 		}
 
 		/**
@@ -236,18 +252,18 @@ if ( !class_exists( 'PvtlUpdateWatcher' ) ) {
 			$this->log_last_check_time();
 		}
 
-        public function update_check(&$message)
+        public function update_check(&$message, $ignore_settings = false)
         {
             $options      = $this->getSetOptions( self::OPT_FIELD ); // get settings
 			$core_updated = $this->core_update_check( $message ); // check the WP core for updates
 
-			if ( 0 != $options['notify_plugins'] ) { // are we to check for plugin updates?
+			if ( 0 != $options['notify_plugins'] || $ignore_settings ) { // are we to check for plugin updates?
 				$plugins_updated = $this->plugins_update_check( $message, $options['notify_plugins'] ); // check for plugin updates
 			} else {
 				$plugins_updated = false; // no plugin updates
 			}
 
-			if ( 0 != $options['notify_themes'] ) { // are we to check for theme updates?
+			if ( 0 != $options['notify_themes'] && $ignore_settings) { // are we to check for theme updates?
 				$themes_updated = $this->themes_update_check( $message, $options['notify_themes'] ); // check for theme updates
 			} else {
 				$themes_updated = false; // no theme updates
@@ -647,7 +663,7 @@ if ( !class_exists( 'PvtlUpdateWatcher' ) ) {
         }
         public function download_pdf() {
             $message      = ""; // start with a blank message
-			[$core_updated, $plugins_updated, $themes_updated] = $this->update_check($message);
+			[$core_updated, $plugins_updated, $themes_updated] = $this->update_check($message, true);
 
             if ( $core_updated || $plugins_updated || $themes_updated ) {
                 $message = $this->puw_pdf_content_template(trim($message));
@@ -662,6 +678,9 @@ if ( !class_exists( 'PvtlUpdateWatcher' ) ) {
 
                 // Make the browser download the PDF output
                 $dompdf->stream($filename, ['Attachment'=>1]);
+            }
+            else {
+                wp_redirect(admin_url('options-general.php?page=pvtl-update-watcher&no-updates'));
             }
         }
 
