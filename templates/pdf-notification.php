@@ -16,7 +16,7 @@
 <body>
 
 <p><img src="https://www.pivotalagency.com.au/assets/images/pivotal.png" style="width: 130px; height: auto;" /></p>
-
+<p><?= $name ?></p>
 <p><strong>Report Date: </strong><?php echo $date; ?></p>
 
 <hr style="margin: 20px 0; border: 0; border-bottom: 1px dotted #eee;" />
