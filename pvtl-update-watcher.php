@@ -3,7 +3,7 @@
 Plugin Name: Wordpress Update Watcher
 Plugin URI: https://www.pivotalagency.com.au/
 Description: Checks Wordpress & Plugins for required updates and sends a notification when updates are required
-Version: 1.0.7
+Version: 1.0.8
 Author: Pivotal Agency
 Author URI: https://www.pivotalagency.com.au/
 Text Domain: pvtl-update-watcher

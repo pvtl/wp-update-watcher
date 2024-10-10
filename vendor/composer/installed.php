@@ -3,7 +3,7 @@
         'name' => 'pvtl/wp-update-watcher',
         'pretty_version' => 'dev-master',
         'version' => 'dev-master',
-        'reference' => 'fd7a6d98ee1fe7ed722f131cd0004a606f202b63',
+        'reference' => 'fd0fa984bb9de0a08f2e3e53c62a8d2113542a60',
         'type' => 'wordpress-plugin',
         'install_path' => __DIR__ . '/../../',
         'aliases' => array(),
@@ -49,7 +49,7 @@
         'pvtl/wp-update-watcher' => array(
             'pretty_version' => 'dev-master',
             'version' => 'dev-master',
-            'reference' => 'fd7a6d98ee1fe7ed722f131cd0004a606f202b63',
+            'reference' => 'fd0fa984bb9de0a08f2e3e53c62a8d2113542a60',
             'type' => 'wordpress-plugin',
             'install_path' => __DIR__ . '/../../',
             'aliases' => array(),
