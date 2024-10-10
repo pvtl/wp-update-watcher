@@ -1,5 +1,6 @@
 <?php
 /**
+ * @var $name
  * @var $message
  * @var $date
  */

@@ -490,6 +490,7 @@ if ( !class_exists( 'PvtlUpdateWatcher' ) ) {
 		}
 
         public function puw_pdf_content_template($message) {
+			$name = $this->getSetOptions( self::OPT_FIELD )['notify_to_name'] ? $this->getSetOptions( self::OPT_FIELD )['notify_to_name'] : 'there';
             $date = wp_date('D, d M Y H:i:s');
             ob_start();
 		    include 'templates/pdf-notification.php';
