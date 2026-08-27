@@ -456,7 +456,11 @@ if ( !class_exists( 'PvtlUpdateWatcher' ) ) {
 		public function send_notification_email( $message ) {
 		    $message = $this->puw_email_content_template($message);
 			$settings = $this->getSetOptions( self::OPT_FIELD ); // get settings
-			$subject = __( "We've scanned your site, here's what we found", "pvtl-update-watcher" );
+			$site_url = home_url();
+			$subject = sprintf(
+				__( "We've scanned your site (%s), here's what we found", "pvtl-update-watcher" ),
+				wp_parse_url( $site_url, PHP_URL_HOST )
+			);
 			$headers = [];
 			$headers[] = 'Reply-To: Pivotal Agency <hello@pivotalagency.com.au>';
 			add_filter( 'wp_mail_from', array( $this, 'puw_wp_mail_from' ) ); // add from filter
@@ -483,6 +487,7 @@ if ( !class_exists( 'PvtlUpdateWatcher' ) ) {
 
 		public function puw_email_content_template($message) {
 			$name = $this->getSetOptions( self::OPT_FIELD )['notify_to_name'] ? $this->getSetOptions( self::OPT_FIELD )['notify_to_name'] : 'there';
+			$site_url = home_url();
             ob_start();
 		    include 'templates/email-notification.php';
 		    $message = ob_get_clean();

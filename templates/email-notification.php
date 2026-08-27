@@ -2,6 +2,7 @@
 /**
  * @var $name
  * @var $message
+ * @var $site_url
  */
 ?>
 
@@ -17,6 +18,8 @@
 
 <p>Hi <?= $name ?>,<br />
 As part of our commitment at Pivotal Agency to keep your website secure we have completed a routine review of your website and determined that the following items are out of date and should be updated:</p>
+
+<p><strong>Website:</strong> <a href="<?= esc_url( $site_url ) ?>" style="color: #F9C503;"><?= esc_html( $site_url ) ?></a></p>
 
 <hr style="margin: 20px 0; border: 0; border-bottom: 1px dotted #eee;" />
 
